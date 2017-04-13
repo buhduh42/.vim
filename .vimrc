@@ -17,13 +17,16 @@ map <silent> <leader>c :!clear<CR>
 
 let mapleader = " "
 
+"folding macros for golang
 "Was having trouble getting the grouped or ()|() regex working
 "though it did work directly...
-nmap <silent> <leader>f :g/^func.\+($/:normal V%$%zf<CR><leader>of
+nmap <silent> <leader>f mz:g/^func.\+($/:normal V%$%zf<CR><leader>of
 nmap <silent> <leader>of :g/^func.\+{$/:normal $V%zf<CR><leader>cf
 nmap <silent> <leader>cf :g/^const ($/:normal V%zf<CR><leader>if
-nmap <silent> <leader>if :g/^import ($/:normal V%zf<CR><leader>sf
-nnoremap <silent> <leader>sf :g/^type.\+{$/:normal V%zf<CR>
+nmap <silent> <leader>if :g/^import ($/:normal V%zf<CR><leader>vf
+nmap <silent> <leader>vf :g/^var .\+{$/:normal V$h%zf<CR><leader>sf
+"don't recurse on that last chain call
+nnoremap <silent> <leader>sf :g/^type.\+{$/:normal V%zf<CR>'z
 
 nnoremap <silent> <leader>j :normal ggVG<CR>:<c-u>call clean_json#CleanJSON()<CR>
 vnoremap <silent> <leader>j :<c-u>call clean_json#CleanJSON()<CR>
