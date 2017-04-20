@@ -20,7 +20,7 @@ let mapleader = " "
 "folding macros for golang
 "Was having trouble getting the grouped or ()|() regex working
 "though it did work directly...
-nmap <silent> <leader>f mz:g/^func.\+($/:normal V%$%zf<CR><leader>of
+nmap <silent> <leader>f mz:g/^func.\+($/:normal V$h%$h%zf<CR><leader>of
 nmap <silent> <leader>of :g/^func.\+{$/:normal $V%zf<CR><leader>cf
 nmap <silent> <leader>cf :g/^const ($/:normal V%zf<CR><leader>if
 nmap <silent> <leader>if :g/^import ($/:normal V%zf<CR><leader>vf
