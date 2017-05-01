@@ -10,6 +10,8 @@ set smarttab
 set ruler
 set smartindent
 
+autocmd BufRead,BufNewFile *.cpp,*.cc,*.h,*.c,Makefile set shiftwidth=4 tabstop=4 noexpandtab
+
 execute pathogen#infect()
 "map <C-n> :NERDTreeToggle<CR>
 map <C-n> <plug>NERDTreeTabsToggle<CR>
