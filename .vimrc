@@ -11,6 +11,7 @@ set ruler
 set smartindent
 
 autocmd BufRead,BufNewFile *.cpp,*.cc,*.h,*.c,Makefile set shiftwidth=4 tabstop=4 noexpandtab
+autocmd FileType cpp,c source ~/.vim/syntax/vulkan1.0.vim
 
 execute pathogen#infect()
 "map <C-n> :NERDTreeToggle<CR>
