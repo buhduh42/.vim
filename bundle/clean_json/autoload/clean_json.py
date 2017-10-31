@@ -19,7 +19,7 @@ def doIt():
   except ValueError, e:
     print e
     return
-  out = json.dumps(obj, indent=1)
+  out = json.dumps(obj, indent=2)
   for i in range(start, stop + 1):
     vim.command("d")
   lines = out.split("\n")

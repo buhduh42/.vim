@@ -12,13 +12,13 @@ set smartindent
 
 autocmd BufRead,BufNewFile *.cpp,*.cc,*.h,*.c,Makefile set shiftwidth=4 tabstop=4 noexpandtab
 autocmd FileType cpp,c source ~/.vim/syntax/vulkan1.0.vim
+let mapleader = " "
 
 execute pathogen#infect()
 "map <C-n> :NERDTreeToggle<CR>
 map <C-n> <plug>NERDTreeTabsToggle<CR>
 map <silent> <leader>c :!clear<CR>
-
-let mapleader = " "
+map <silent> <leader>s :call stupid_brackets#MatchitRuby()<CR>
 
 "folding macros for golang
 "Was having trouble getting the grouped or ()|() regex working
