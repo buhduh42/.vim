@@ -33,3 +33,6 @@ nnoremap <silent> <leader>sf :g/^type.\+{$/:normal V%zf<CR>'z
 
 nnoremap <silent> <leader>j :normal ggVG<CR>:<c-u>call clean_json#CleanJSON()<CR>
 vnoremap <silent> <leader>j :<c-u>call clean_json#CleanJSON()<CR>
+
+set foldmethod=indent
+set foldlevel=99
