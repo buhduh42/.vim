@@ -19,15 +19,29 @@ if !exists("g:rustfmt_fail_silently")
 	let g:rustfmt_fail_silently = 0
 endif
 
+if !exists("g:rustfmt_emit_files")
+	let g:rustfmt_emit_files = 1 - (system(g:rustfmt_command . " --version") =~ "rustfmt 0.[0-6].\.*")
+endif
+
 let s:got_fmt_error = 0
+
+function! s:RustfmtWriteMode()
+    if g:rustfmt_emit_files
+	    return "--emit=files"
+    else
+	    return "--write-mode=overwrite"
+    endif
+endfunction
 
 function! s:RustfmtCommandRange(filename, line1, line2)
 	let l:arg = {"file": shellescape(a:filename), "range": [a:line1, a:line2]}
-	return printf("%s %s --write-mode=overwrite --file-lines '[%s]'", g:rustfmt_command, g:rustfmt_options, json_encode(l:arg))
+	let l:write_mode = s:RustfmtWriteMode()
+	return printf("%s %s %s --file-lines '[%s]'", g:rustfmt_command, l:write_mode, g:rustfmt_options, json_encode(l:arg))
 endfunction
 
 function! s:RustfmtCommand(filename)
-	return g:rustfmt_command . " --write-mode=overwrite " . g:rustfmt_options . " " . shellescape(a:filename)
+	let l:write_mode = s:RustfmtWriteMode()
+	return g:rustfmt_command . " ". l:write_mode . " " . g:rustfmt_options . " " . shellescape(a:filename)
 endfunction
 
 function! s:RunRustfmt(command, curw, tmpname)
@@ -103,5 +117,11 @@ function! rustfmt#Format()
 
 	let command = s:RustfmtCommand(l:tmpname)
 
+	mkview!
+
 	call s:RunRustfmt(command, l:curw, l:tmpname)
+
+	silent! loadview
 endfunction
+
+" vim: set noet sw=8 ts=8:
