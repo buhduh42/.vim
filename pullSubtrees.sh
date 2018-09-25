@@ -7,4 +7,4 @@ git subtree pull -P bundle/vim-glsl https://github.com/tikhomirov/vim-glsl maste
 git subtree pull -P bundle/rust.vim https://github.com/rust-lang/rust.vim.git master --squash
 git subtree pull -P bundle/salt-vim https://github.com/saltstack/salt-vim.git master --squash
 git subtree pull -P bundle/vim-racer https://github.com/racer-rust/vim-racer.git master --squash
-git subtree pull -P bundle/Jenkinsfile-vim-syntax https://github.com/martinda/Jenkinsfile-vim-syntax.git --squash
+git subtree pull -P bundle/Jenkinsfile-vim-syntax https://github.com/martinda/Jenkinsfile-vim-syntax.git master --squash
