@@ -37,5 +37,5 @@ vnoremap <silent> <leader>j :<c-u>call clean_json#CleanJSON()<CR>
 "set foldmethod=indent
 "set foldlevel=99
 
-"let g:go_version_warning = 0
-"let g:go_fmt_autosave = 0
+let g:go_version_warning = 0
+let g:go_fmt_autosave = 0
