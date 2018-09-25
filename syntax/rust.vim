@@ -7,9 +7,9 @@
 " For bugs, patches and license go to https://github.com/rust-lang/rust.vim
 
 if version < 600
-	syntax clear
+    syntax clear
 elseif exists("b:current_syntax")
-	finish
+    finish
 endif
 
 " Syntax definitions {{{1
@@ -27,6 +27,7 @@ syn match     rustPanic       "\<panic\(\w\)*!" contained
 syn keyword   rustKeyword     break
 syn keyword   rustKeyword     box nextgroup=rustBoxPlacement skipwhite skipempty
 syn keyword   rustKeyword     continue
+syn keyword   rustKeyword     crate
 syn keyword   rustKeyword     extern nextgroup=rustExternCrate,rustObsoleteExternMod skipwhite skipempty
 syn keyword   rustKeyword     fn nextgroup=rustFuncName skipwhite skipempty
 syn keyword   rustKeyword     in impl let
@@ -42,8 +43,6 @@ syn keyword   rustKeyword     use nextgroup=rustModPath skipwhite skipempty
 syn keyword   rustKeyword     mod trait nextgroup=rustIdentifier skipwhite skipempty
 syn keyword   rustStorage     move mut ref static const
 syn match rustDefault /\<default\ze\_s\+\(impl\|fn\|type\|const\)\>/
-
-syn keyword   rustInvalidBareKeyword crate
 
 syn keyword rustPubScopeCrate crate contained
 syn match rustPubScopeDelim /[()]/ contained
@@ -154,11 +153,11 @@ syn region    rustDerive      start="derive(" end=")" contained contains=rustDer
 syn keyword   rustDeriveTrait contained Clone Hash RustcEncodable RustcDecodable Encodable Decodable PartialEq Eq PartialOrd Ord Rand Show Debug Default FromPrimitive Send Sync Copy
 
 " dyn keyword: It's only a keyword when used inside a type expression, so
-" we make effort here to highlight it only when Rust identifiers follow it 
+" we make effort here to highlight it only when Rust identifiers follow it
 " (not minding the case of pre-2018 Rust where a path starting with :: can
 " follow).
 "
-" This is so that uses of dyn variable names such as in 'let &dyn = &2' 
+" This is so that uses of dyn variable names such as in 'let &dyn = &2'
 " and 'let dyn = 2' will not get highlighted as a keyword.
 syn match     rustKeyword "\<dyn\ze\_s\+\%([^[:cntrl:][:space:][:punct:][:digit:]]\|_\)" contains=rustDynKeyword
 syn keyword   rustDynKeyword  dyn contained
@@ -199,11 +198,12 @@ syn region rustCommentLine                                                  star
 syn region rustCommentLineDoc                                               start="//\%(//\@!\|!\)"         end="$"   contains=rustTodo,@Spell
 syn region rustCommentLineDocError                                          start="//\%(//\@!\|!\)"         end="$"   contains=rustTodo,@Spell contained
 syn region rustCommentBlock             matchgroup=rustCommentBlock         start="/\*\%(!\|\*[*/]\@!\)\@!" end="\*/" contains=rustTodo,rustCommentBlockNest,@Spell
-syn region rustCommentBlockDoc          matchgroup=rustCommentBlockDoc      start="/\*\%(!\|\*[*/]\@!\)"    end="\*/" contains=rustTodo,rustCommentBlockDocNest,@Spell
+syn region rustCommentBlockDoc          matchgroup=rustCommentBlockDoc      start="/\*\%(!\|\*[*/]\@!\)"    end="\*/" contains=rustTodo,rustCommentBlockDocNest,rustCommentBlockDocRustCode,@Spell
 syn region rustCommentBlockDocError     matchgroup=rustCommentBlockDocError start="/\*\%(!\|\*[*/]\@!\)"    end="\*/" contains=rustTodo,rustCommentBlockDocNestError,@Spell contained
 syn region rustCommentBlockNest         matchgroup=rustCommentBlock         start="/\*"                     end="\*/" contains=rustTodo,rustCommentBlockNest,@Spell contained transparent
 syn region rustCommentBlockDocNest      matchgroup=rustCommentBlockDoc      start="/\*"                     end="\*/" contains=rustTodo,rustCommentBlockDocNest,@Spell contained transparent
 syn region rustCommentBlockDocNestError matchgroup=rustCommentBlockDocError start="/\*"                     end="\*/" contains=rustTodo,rustCommentBlockDocNestError,@Spell contained transparent
+
 " FIXME: this is a really ugly and not fully correct implementation. Most
 " importantly, a case like ``/* */*`` should have the final ``*`` not being in
 " a comment, but in practice at present it leaves comments open two levels
@@ -222,6 +222,39 @@ syn keyword rustTodo contained TODO FIXME XXX NB NOTE
 " Trivial folding rules to begin with.
 " FIXME: use the AST to make really good folding
 syn region rustFoldBraces start="{" end="}" transparent fold
+
+if !exists("b:current_syntax_embed")
+    let b:current_syntax_embed = 1
+    syntax include @RustCodeInComment <sfile>:p:h/rust.vim
+    unlet b:current_syntax_embed
+
+    " Currently regions marked as ```<some-other-syntax> will not get
+    " highlighted at all. In the future, we can do as vim-markdown does and
+    " highlight with the other syntax. But for now, let's make sure we find
+    " the closing block marker, because the rules below won't catch it.
+    syn region rustCommentLinesDocNonRustCode matchgroup=rustCommentDocCodeFence start='^\z(\s*//[!/]\s*```\).\+$' end='^\z1$' keepend contains=rustCommentLineDoc
+
+    " We borrow the rules from rust’s src/librustdoc/html/markdown.rs, so that
+    " we only highlight as Rust what it would perceive as Rust (almost; it’s
+    " possible to trick it if you try hard, and indented code blocks aren’t
+    " supported because Markdown is a menace to parse and only mad dogs and
+    " Englishmen would try to handle that case correctly in this syntax file).
+    syn region rustCommentLinesDocRustCode matchgroup=rustCommentDocCodeFence start='^\z(\s*//[!/]\s*```\)[^A-Za-z0-9_-]*\%(\%(should_panic\|no_run\|ignore\|allow_fail\|rust\|test_harness\|compile_fail\|E\d\{4}\)\%([^A-Za-z0-9_-]\+\|$\)\)*$' end='^\z1$' keepend contains=@RustCodeInComment,rustCommentLineDocLeader
+    syn region rustCommentBlockDocRustCode matchgroup=rustCommentDocCodeFence start='^\z(\%(\s*\*\)\?\s*```\)[^A-Za-z0-9_-]*\%(\%(should_panic\|no_run\|ignore\|allow_fail\|rust\|test_harness\|compile_fail\|E\d\{4}\)\%([^A-Za-z0-9_-]\+\|$\)\)*$' end='^\z1$' keepend contains=@RustCodeInComment,rustCommentBlockDocStar
+    " Strictly, this may or may not be correct; this code, for example, would
+    " mishighlight:
+    "
+    "     /**
+    "     ```rust
+    "     println!("{}", 1
+    "     * 1);
+    "     ```
+    "     */
+    "
+    " … but I don’t care. Balance of probability, and all that.
+    syn match rustCommentBlockDocStar /^\s*\*\s\?/ contained
+    syn match rustCommentLineDocLeader "^\s*//\%(//\@!\|!\)" contained
+endif
 
 " Default highlighting {{{1
 hi def link rustDecNumber       rustNumber
@@ -275,10 +308,13 @@ hi def link rustFuncCall      Function
 hi def link rustShebang       Comment
 hi def link rustCommentLine   Comment
 hi def link rustCommentLineDoc SpecialComment
+hi def link rustCommentLineDocLeader rustCommentLineDoc
 hi def link rustCommentLineDocError Error
 hi def link rustCommentBlock  rustCommentLine
 hi def link rustCommentBlockDoc rustCommentLineDoc
+hi def link rustCommentBlockDocStar rustCommentBlockDoc
 hi def link rustCommentBlockDocError Error
+hi def link rustCommentDocCodeFence rustCommentLineDoc
 hi def link rustAssert        PreCondit
 hi def link rustPanic         PreCondit
 hi def link rustMacro         Macro
@@ -291,7 +327,6 @@ hi def link rustStorage       StorageClass
 hi def link rustObsoleteStorage Error
 hi def link rustLifetime      Special
 hi def link rustLabel         Label
-hi def link rustInvalidBareKeyword Error
 hi def link rustExternCrate   rustKeyword
 hi def link rustObsoleteExternMod Error
 hi def link rustBoxPlacementParens Delimiter
@@ -308,3 +343,5 @@ syn sync minlines=200
 syn sync maxlines=500
 
 let b:current_syntax = "rust"
+
+" vim: set et sw=4 sts=4 ts=8:
