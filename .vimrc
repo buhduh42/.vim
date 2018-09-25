@@ -11,7 +11,7 @@ set ruler
 set smartindent
 
 autocmd BufRead,BufNewFile *.cpp,*.cc,*.h,*.c,Makefile set shiftwidth=4 tabstop=4 noexpandtab
-autocmd FileType cpp,c source ~/.vim/syntax/vulkan1.0.vim
+autocmd FileType cpp,c,h source ~/.vim/syntax/vulkan1.0.vim
 let mapleader = " "
 
 execute pathogen#infect()
@@ -37,4 +37,5 @@ vnoremap <silent> <leader>j :<c-u>call clean_json#CleanJSON()<CR>
 "set foldmethod=indent
 "set foldlevel=99
 
-let g:go_version_warning = 0
+"let g:go_version_warning = 0
+"let g:go_fmt_autosave = 0
