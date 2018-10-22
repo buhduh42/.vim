@@ -18,7 +18,7 @@ execute pathogen#infect()
 "map <C-n> :NERDTreeToggle<CR>
 map <C-n> <plug>NERDTreeTabsToggle<CR>
 map <silent> <leader>c :!clear<CR>
-map <silent> <leader>s :call stupid_brackets#MatchitRuby()<CR>
+"map <silent> <leader>s :call stupid_brackets#MatchitRuby()<CR>
 
 "folding macros for golang
 "Was having trouble getting the grouped or ()|() regex working
