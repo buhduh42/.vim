@@ -62,6 +62,8 @@ function! s:UI._dumpHelp()
         let help .= "\" Bookmark table mappings~\n"
         let help .= "\" double-click,\n"
         let help .= "\" ". g:NERDTreeMapActivateNode .": open bookmark\n"
+        let help .= "\" ". g:NERDTreeMapPreview .": preview file\n"
+        let help .= "\" ". g:NERDTreeMapPreview .": find dir in tree\n"
         let help .= "\" ". g:NERDTreeMapOpenInTab.": open in new tab\n"
         let help .= "\" ". g:NERDTreeMapOpenInTabSilent .": open in new tab silently\n"
         let help .= "\" ". g:NERDTreeMapDeleteBookmark .": delete bookmark\n"
@@ -119,6 +121,9 @@ function! s:UI._dumpHelp()
         let help .= "\" :OpenBookmark <name>\n"
         let help .= "\" :ClearBookmarks [<names>]\n"
         let help .= "\" :ClearAllBookmarks\n"
+        let help .= "\" :ReadBookmarks\n"
+        let help .= "\" :WriteBookmarks\n"
+        let help .= "\" :EditBookmarks\n"
         silent! put =help
     elseif !self.isMinimal()
         let help ="\" Press ". g:NERDTreeMapHelp ." for help\n"
@@ -275,11 +280,10 @@ endfunction
 
 " FUNCTION: s:UI._indentLevelFor(line) {{{1
 function! s:UI._indentLevelFor(line)
-    " have to do this work around because match() returns bytes, not chars
-    let numLeadBytes = match(a:line, '\M\[^ '.g:NERDTreeDirArrowExpandable.g:NERDTreeDirArrowCollapsible.']')
-    " The next line is a backward-compatible workaround for strchars(a:line(0:numLeadBytes-1]). strchars() is in 7.3+
-    let leadChars = len(split(a:line[0:numLeadBytes-1], '\zs'))
-
+    " Replace multi-character DirArrows with a single space so the
+    " indentation calculation doesn't get messed up.
+    let l:line = substitute(substitute(a:line, '\V'.g:NERDTreeDirArrowExpandable, ' ', ''), '\V'.g:NERDTreeDirArrowCollapsible, ' ', '')
+    let leadChars = match(l:line, '\M\[^ ]')
     return leadChars / s:UI.IndentWid()
 endfunction
 
@@ -300,7 +304,7 @@ endfunction
 
 " FUNCTION: s:UI.MarkupReg() {{{1
 function! s:UI.MarkupReg()
-    return '^\(['.g:NERDTreeDirArrowExpandable.g:NERDTreeDirArrowCollapsible.'] \| \+['.g:NERDTreeDirArrowExpandable.g:NERDTreeDirArrowCollapsible.'] \| \+\)'
+    return '^ *['.g:NERDTreeDirArrowExpandable.g:NERDTreeDirArrowCollapsible.']\? '
 endfunction
 
 " FUNCTION: s:UI._renderBookmarks {{{1
@@ -363,30 +367,13 @@ function! s:UI.setShowHidden(val)
 endfunction
 
 " FUNCTION: s:UI._stripMarkup(line){{{1
-" returns the given line with all the tree parts stripped off
+" find the filename in the given line, and return it.
 "
 " Args:
 " line: the subject line
 function! s:UI._stripMarkup(line)
-    let line = a:line
-    " remove the tree parts and the leading space
-    let line = substitute (line, g:NERDTreeUI.MarkupReg(),"","")
-
-    " strip off any read only flag
-    let line = substitute (line, ' \['.g:NERDTreeGlyphReadOnly.'\]', "","")
-
-    " strip off any bookmark flags
-    let line = substitute (line, ' {[^}]*}', "","")
-
-    " strip off any executable flags
-    let line = substitute (line, '*\ze\($\| \)', "","")
-
-    " strip off any generic flags
-    let line = substitute (line, '\[[^]]*\]', "","")
-
-    let line = substitute (line,' -> .*',"","") " remove link to
-
-    return line
+    let l:line = substitute(a:line, '^.\{-}' . g:NERDTreeNodeDelimiter, '', '')
+    return substitute(l:line, g:NERDTreeNodeDelimiter.'.*$', '', '')
 endfunction
 
 " FUNCTION: s:UI.render() {{{1
@@ -520,7 +507,7 @@ function! s:UI.toggleZoom()
         exec "silent vertical resize ". size
         let b:NERDTreeZoomed = 0
     else
-        exec "vertical resize"
+        exec "vertical resize ". get(g:, 'NERDTreeWinSizeMax', '')
         let b:NERDTreeZoomed = 1
     endif
 endfunction
