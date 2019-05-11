@@ -3,23 +3,59 @@
 " Last Modified: May 27, 2014
 " For bugs, patches and license go to https://github.com/rust-lang/rust.vim
 
-" Jump {{{1
-
-function! rust#Load() 
+function! rust#Load()
     " Utility call to get this script loaded, for debugging
 endfunction
 
 function! rust#GetConfigVar(name, default)
     " Local buffer variable with same name takes predeence over global
-    if has_key(b:, a:name) 
+    if has_key(b:, a:name)
         return get(b:, a:name)
     endif
-    if has_key(g:, a:name) 
+    if has_key(g:, a:name)
         return get(g:, a:name)
     endif
     return a:default
 endfunction
 
+" Include expression {{{1
+
+function! rust#IncludeExpr(fname) abort
+    " Remove leading 'crate::' to deal with 2018 edition style 'use'
+    " statements
+    let l:fname = substitute(a:fname, '^crate::', '', '')
+
+    " Remove trailing colons arising from lines like
+    "
+    "     use foo::{Bar, Baz};
+    let l:fname = substitute(l:fname, ':\+$', '', '')
+
+    " Replace '::' with '/'
+    let l:fname = substitute(l:fname, '::', '/', 'g')
+
+    " When we have
+    "
+    "    use foo::bar::baz;
+    "
+    " we can't tell whether baz is a module or a function; and we can't tell
+    " which modules correspond to files.
+    "
+    " So we work our way up, trying
+    "
+    "     foo/bar/baz.rs
+    "     foo/bar.rs
+    "     foo.rs
+    while l:fname !=# '.'
+        let l:path = findfile(l:fname)
+        if !empty(l:path)
+            return l:fname
+        endif
+        let l:fname = fnamemodify(l:fname, ':h')
+    endwhile
+    return l:fname
+endfunction
+
+" Jump {{{1
 
 function! rust#Jump(mode, function) range
     let cnt = v:count1
@@ -433,6 +469,76 @@ function! rust#Play(count, line1, line2, ...) abort
         endif
     endif
     redraw | echomsg 'Done: '.url.footer
+endfunction
+
+" Run a test under the cursor or all tests {{{1
+
+" Finds a test function name under the cursor. Returns empty string when a
+" test function is not found.
+function! s:SearchTestFunctionNameUnderCursor() abort
+    let cursor_line = line('.')
+
+    " Find #[test] attribute
+    if search('\m\C#\[test\]', 'bcW') is 0
+        return ''
+    endif
+
+    " Move to an opening brace of the test function
+    let test_func_line = search('\m\C^\s*fn\s\+\h\w*\s*(.\+{$', 'eW')
+    if test_func_line is 0
+        return ''
+    endif
+
+    " Search the end of test function (closing brace) to ensure that the
+    " cursor position is within function definition
+    normal! %
+    if line('.') < cursor_line
+        return ''
+    endif
+
+    return matchstr(getline(test_func_line), '\m\C^\s*fn\s\+\zs\h\w*')
+endfunction
+
+function! rust#Test(all, options) abort
+    let manifest = findfile('Cargo.toml', expand('%:p:h') . ';')
+    if manifest ==# ''
+        return rust#Run(1, '--test ' . a:options)
+    endif
+
+    if exists(':terminal')
+        let cmd = 'terminal '
+    else
+        let cmd = '!'
+        let manifest = shellescape(manifest)
+    endif
+
+    if a:all
+        if a:options ==# ''
+            execute cmd . 'cargo test --manifest-path' manifest
+        else
+            execute cmd . 'cargo test --manifest-path' manifest a:options
+        endif
+        return
+    endif
+
+    let saved = getpos('.')
+    try
+        let func_name = s:SearchTestFunctionNameUnderCursor()
+        if func_name ==# ''
+            echohl ErrorMsg
+            echo 'No test function was found under the cursor. Please add ! to command if you want to run all tests'
+            echohl None
+            return
+        endif
+        if a:options ==# ''
+            execute cmd . 'cargo test --manifest-path' manifest func_name
+        else
+            execute cmd . 'cargo test --manifest-path' manifest func_name a:options
+        endif
+        return
+    finally
+        call setpos('.', saved)
+    endtry
 endfunction
 
 " }}}1

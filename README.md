@@ -3,7 +3,8 @@
 ## Description
 
 This is a Vim plugin that provides [Rust][r] file detection, syntax highlighting, formatting,
-[Syntastic][syn] integration, and more.
+[Syntastic][syn] integration, and more. It requires Vim 8 or higher for full functionality.
+Some things may not work on earlier versions. 
 
 ## Installation
 
@@ -70,6 +71,11 @@ If you set g:rust_clip_command RustPlay will copy the url to the clipboard.
 - Linux:
 
         let g:rust_clip_command = 'xclip -selection clipboard'
+
+### Running a test under cursor
+
+In cargo project, the `:RustTest` command will run a test under the cursor.
+This is useful when your project is bigger and running all tests take longer time.
 
 ## Help
 
