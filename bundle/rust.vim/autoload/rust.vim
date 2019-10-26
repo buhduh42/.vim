@@ -396,10 +396,19 @@ function! s:RmDir(path)
         echoerr 'Attempted to delete empty path'
         return 0
     elseif a:path ==# '/' || a:path ==# $HOME
-        echoerr 'Attempted to delete protected path: ' . a:path
+        let l:path = expand(a:path)
+        if l:path ==# '/' || l:path ==# $HOME
+            echoerr 'Attempted to delete protected path: ' . a:path
+            return 0
+        endif
+    endif
+
+    if !isdirectory(a:path)
         return 0
     endif
-    return system("rm -rf " . shellescape(a:path))
+
+    " delete() returns 0 when removing file successfully
+    return delete(a:path, 'rf') == 0
 endfunction
 
 " Executes {cmd} with the cwd set to {pwd}, without changing Vim's cwd.
@@ -505,8 +514,10 @@ function! rust#Test(all, options) abort
         return rust#Run(1, '--test ' . a:options)
     endif
 
-    if exists(':terminal')
+    if has('terminal')
         let cmd = 'terminal '
+    elseif has('nvim')
+        let cmd = 'noautocmd new | terminal '
     else
         let cmd = '!'
         let manifest = shellescape(manifest)
@@ -526,7 +537,7 @@ function! rust#Test(all, options) abort
         let func_name = s:SearchTestFunctionNameUnderCursor()
         if func_name ==# ''
             echohl ErrorMsg
-            echo 'No test function was found under the cursor. Please add ! to command if you want to run all tests'
+            echomsg 'No test function was found under the cursor. Please add ! to command if you want to run all tests'
             echohl None
             return
         endif
