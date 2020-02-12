@@ -326,10 +326,10 @@ endfunction
 
 function! s:expand_var() abort
   " Get name from struct line.
-  let name = matchstr(getline('.'), '^[^:]\+\ze: [a-zA-Z0-9\.·]\+{\.\.\.}$')
+  let name = matchstr(getline('.'), '^[^:]\+\ze: \*\?[a-zA-Z0-9-_/\.]\+\({\.\.\.}\)\?$')
   " Anonymous struct
   if name == ''
-    let name = matchstr(getline('.'), '^[^:]\+\ze: struct {.\{-}}$')
+    let name = matchstr(getline('.'), '^[^:]\+\ze: \*\?struct {.\{-}}$')
   endif
 
   if name != ''
@@ -1116,7 +1116,7 @@ function! s:list_breakpoints()
   return l:signs
 endfunction
 
-sign define godebugbreakpoint text=> texthl=GoDebugBreakpoint
+exe 'sign define godebugbreakpoint text='.go#config#DebugBreakpointSignText().' texthl=GoDebugBreakpoint'
 sign define godebugcurline    text== texthl=GoDebugCurrent    linehl=GoDebugCurrent
 
 " restore Vi compatibility settings
