@@ -17,7 +17,7 @@ func! s:gometa(metalinter) abort
         \ ]
     if a:metalinter == 'golangci-lint'
       let expected = [
-            \ {'lnum': 5, 'bufnr': bufnr('%')+2, 'col': 1, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'exported function `MissingFooDoc` should have comment or be unexported (golint)'}
+            \ {'lnum': 5, 'bufnr': bufnr('%')+4, 'col': 1, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'exported function `MissingFooDoc` should have comment or be unexported (golint)'}
           \ ]
     endif
 
@@ -27,6 +27,42 @@ func! s:gometa(metalinter) abort
     let g:go_metalinter_enabled = ['golint']
 
     call go#lint#Gometa(0, 0, $GOPATH . '/src/foo')
+
+    let actual = getqflist()
+    let start = reltime()
+    while len(actual) == 0 && reltimefloat(reltime(start)) < 10
+      sleep 100m
+      let actual = getqflist()
+    endwhile
+
+    call gotest#assert_quickfix(actual, expected)
+  finally
+      call call(RestoreGOPATH, [])
+      unlet g:go_metalinter_enabled
+  endtry
+endfunc
+
+func! Test_GometaGolangciLint_problems() abort
+  call s:gometa_problems('golangci-lint')
+endfunc
+
+func! s:gometa_problems(metalinter) abort
+  let RestoreGOPATH = go#util#SetEnv('GOPATH', fnamemodify(getcwd(), ':p') . 'test-fixtures/lint')
+  silent exe 'e ' . $GOPATH . '/src/lint/golangci-lint/problems/problems.go'
+
+  try
+    let g:go_metalinter_command = a:metalinter
+    let expected = [
+          \ {'lnum': 3, 'bufnr': bufnr('%'), 'col': 8, 'pattern': '', 'valid': 1, 'vcol': 0, 'nr': -1, 'type': 'w', 'module': '', 'text': '[runner] Can''t run linter golint: golint: analysis skipped: errors in package'},
+          \ {'lnum': 3, 'bufnr': bufnr('%'), 'col': 8, 'pattern': '', 'valid': 1, 'vcol': 0, 'nr': -1, 'type': 'e', 'module': '', 'text': 'Running error: golint: analysis skipped: errors in package'}
+        \ ]
+
+    " clear the quickfix lists
+    call setqflist([], 'r')
+
+    let g:go_metalinter_enabled = ['golint']
+
+    call go#lint#Gometa(0, 0)
 
     let actual = getqflist()
     let start = reltime()
@@ -61,20 +97,54 @@ func! s:gometaautosave(metalinter) abort
           \ ]
     endif
 
-    let winnr = winnr()
-
     " clear the location lists
-    call setloclist(l:winnr, [], 'r')
+    call setloclist(0, [], 'r')
 
     let g:go_metalinter_autosave_enabled = ['golint']
 
     call go#lint#Gometa(0, 1)
 
-    let actual = getloclist(l:winnr)
+    let actual = getloclist(0)
     let start = reltime()
     while len(actual) == 0 && reltimefloat(reltime(start)) < 10
       sleep 100m
-      let actual = getloclist(l:winnr)
+      let actual = getloclist(0)
+    endwhile
+
+    call gotest#assert_quickfix(actual, expected)
+  finally
+    call call(RestoreGOPATH, [])
+    unlet g:go_metalinter_autosave_enabled
+  endtry
+endfunc
+
+func! Test_GometaAutoSaveGolangciLint_problems() abort
+  call s:gometaautosave_problems('golangci-lint')
+endfunc
+
+func! s:gometaautosave_problems(metalinter) abort
+  let RestoreGOPATH = go#util#SetEnv('GOPATH', fnameescape(fnamemodify(getcwd(), ':p')) . 'test-fixtures/lint')
+  silent exe 'e ' . $GOPATH . '/src/lint/golangci-lint/problems/ok.go'
+
+  try
+    let g:go_metalinter_command = a:metalinter
+    let expected = [
+          \ {'lnum': 3, 'bufnr': bufnr('%')+1, 'col': 8, 'pattern': '', 'valid': 1, 'vcol': 0, 'nr': -1, 'type': 'w', 'module': '', 'text': '[runner] Can''t run linter golint: golint: analysis skipped: errors in package'},
+          \ {'lnum': 3, 'bufnr': bufnr('%')+1, 'col': 8, 'pattern': '', 'valid': 1, 'vcol': 0, 'nr': -1, 'type': 'e', 'module': '', 'text': 'Running error: golint: analysis skipped: errors in package'}
+        \ ]
+
+    " clear the location lists
+    call setloclist(0, [], 'r')
+
+    let g:go_metalinter_autosave_enabled = ['golint']
+
+    call go#lint#Gometa(0, 1)
+
+    let actual = getloclist(0)
+    let start = reltime()
+    while len(actual) == 0 && reltimefloat(reltime(start)) < 10
+      sleep 100m
+      let actual = getloclist(0)
     endwhile
 
     call gotest#assert_quickfix(actual, expected)
@@ -151,7 +221,7 @@ func! Test_Lint_GOPATH() abort
 
   let expected = [
           \ {'lnum': 5, 'bufnr': bufnr('%'), 'col': 1, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'exported function MissingDoc should have comment or be unexported'},
-          \ {'lnum': 5, 'bufnr': 6, 'col': 1, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'exported function AlsoMissingDoc should have comment or be unexported'}
+          \ {'lnum': 5, 'bufnr': bufnr('%')+6, 'col': 1, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'exported function AlsoMissingDoc should have comment or be unexported'}
       \ ]
 
   let winnr = winnr()
@@ -179,7 +249,7 @@ func! Test_Lint_NullModule() abort
 
   let expected = [
           \ {'lnum': 5, 'bufnr': bufnr('%'), 'col': 1, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'exported function MissingDoc should have comment or be unexported'},
-          \ {'lnum': 5, 'bufnr': 6, 'col': 1, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'exported function AlsoMissingDoc should have comment or be unexported'}
+          \ {'lnum': 5, 'bufnr': bufnr('%')+6, 'col': 1, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'exported function AlsoMissingDoc should have comment or be unexported'}
       \ ]
 
   let winnr = winnr()
@@ -197,6 +267,25 @@ func! Test_Lint_NullModule() abort
   endwhile
 
   call gotest#assert_quickfix(actual, expected)
+endfunc
+
+func! Test_Errcheck_compilererror() abort
+  let l:tmp = gotest#load_fixture('lint/src/errcheck/compilererror/compilererror.go')
+
+  try
+    let l:bufnr = bufnr('')
+    let expected = []
+
+    " clear the location lists
+    call setqflist([], 'r')
+
+    call go#lint#Errcheck(1)
+
+    call gotest#assert_quickfix(getqflist(), expected)
+    call assert_equal(l:bufnr, bufnr(''))
+  finally
+    call delete(l:tmp, 'rf')
+  endtry
 endfunc
 
 " restore Vi compatibility settings
