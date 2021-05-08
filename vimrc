@@ -10,12 +10,15 @@ set smarttab
 set ruler
 set smartindent
 
-autocmd BufRead,BufNewFile *.cpp,*.cc,*.h,*.c,*.hpp,Makefile set shiftwidth=4 tabstop=4 noexpandtab
+autocmd BufRead,BufNewFile *.cpp,*.cc,*.h,*.c,*.hpp,Makefile setlocal shiftwidth=4 tabstop=4 noexpandtab
+autocmd BufRead,BufNewFile *.js setlocal shiftwidth=2 tabstop=2 noexpandtab
 autocmd FileType cpp,c,h source ~/.vim/syntax/vulkan1.0.vim
-let mapleader = " "
+filetype plugin on
 
 execute pathogen#infect()
+call pathogen#helptags()
 "map <C-n> :NERDTreeToggle<CR>
+let mapleader = " "
 map <C-n> <plug>NERDTreeTabsToggle<CR>
 map <silent> <leader>c :!clear<CR>
 "map <silent> <leader>s :call stupid_brackets#MatchitRuby()<CR>
@@ -37,4 +40,4 @@ vnoremap <silent> <leader>j :<c-u>call clean_json#CleanJSON()<CR>
 "set foldmethod=indent
 "set foldlevel=99
 
-"let g:go_version_warning = 0
+let g:go_version_warning = 0
