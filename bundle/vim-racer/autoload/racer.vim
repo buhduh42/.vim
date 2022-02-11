@@ -108,7 +108,7 @@ function! s:RacerSplitLine(line)
     return parts
 endfunction
 
-function! racer#ShowDocumentation()
+function! racer#ShowDocumentation(tab)
     let winview = winsaveview()  " Save the current cursor position
     " Move to the end of the word for the entire token to search.
     " Move one char back to avoid moving to the end of the *next* word.
@@ -119,7 +119,7 @@ function! racer#ShowDocumentation()
     call writefile(getline(1, '$'), b:tmpfname)
     let fname = expand('%:p')
     let cmd = racer#GetRacerCmd() . ' complete-with-snippet ' .
-        \ line('.') . ' ' . col . ' ' . fname . ' ' . b:tmpfname
+        \ line('.') . ' ' . col . ' "' . fname . '" "' . b:tmpfname . '"'
     let res = system(cmd)
     " Restore de cursor position
     call winrestview(winview)
@@ -143,7 +143,11 @@ function! racer#ShowDocumentation()
             " If the __doc__ buffer is open in the current tab, jump to it
             silent execute (wi+1) . 'wincmd w'
         else
-            pedit __doc__
+            if a:tab
+                tab pedit __doc__
+            else
+                pedit __doc__
+            endif
             wincmd P
         endif
 
@@ -204,7 +208,7 @@ function! racer#GoToDefinition()
     let tmpfname = tempname()
     call writefile(getline(1, '$'), tmpfname)
     let cmd = racer#GetRacerCmd() . ' find-definition ' .
-        \ line('.') . ' ' . col . ' ' . fname . ' ' . tmpfname
+        \ line('.') . ' ' . col . ' "' . fname . '" "' . tmpfname . '"'
     let res = system(cmd)
     let lines = split(res, '\n')
     for line in lines
@@ -310,7 +314,7 @@ function! s:ErrorCheck()
                 \ 'rustlib',
                 \ 'src',
                 \ 'rust',
-                \ 'src',
+                \ 'library',
                 \ ], sep)
             if isdirectory(path)
                 return 0
