@@ -9,4 +9,4 @@ git subtree pull -P bundle/salt-vim https://github.com/saltstack/salt-vim.git ma
 git subtree pull -P bundle/vim-racer https://github.com/racer-rust/vim-racer.git master --squash
 git subtree pull -P bundle/Jenkinsfile-vim-syntax https://github.com/martinda/Jenkinsfile-vim-syntax.git master --squash
 git subtree pull -P bundle/ctrlp https://github.com/kien/ctrlp.vim.git master --squash
-git subtree pull -P bundle/prettier https://github.com/prettier/vim-prettier master --squash
+git subtree pull -P bundle/omnisharp-vim git://github.com/OmniSharp/omnisharp-vim --squash

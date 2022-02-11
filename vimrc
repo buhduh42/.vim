@@ -11,7 +11,8 @@ set ruler
 set smartindent
 
 autocmd BufRead,BufNewFile *.cpp,*.cc,*.h,*.c,*.hpp,Makefile setlocal shiftwidth=4 tabstop=4 noexpandtab
-autocmd BufRead,BufNewFile *.js setlocal shiftwidth=2 tabstop=2 noexpandtab
+autocmd BufRead,BufNewFile *.js setlocal shiftwidth=2 tabstop=2 expandtab
+
 autocmd FileType cpp,c,h source ~/.vim/syntax/vulkan1.0.vim
 filetype plugin on
 
@@ -22,6 +23,7 @@ let mapleader = " "
 map <C-n> <plug>NERDTreeTabsToggle<CR>
 map <silent> <leader>c :!clear<CR>
 "map <silent> <leader>s :call stupid_brackets#MatchitRuby()<CR>
+"
 
 "folding macros for golang
 "Was having trouble getting the grouped or ()|() regex working
