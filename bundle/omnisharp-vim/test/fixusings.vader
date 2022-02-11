@@ -1,0 +1,173 @@
+Include: utils/startserver.vader
+Include: utils/async-helper.vader
+
+Given cs():
+  using System;
+  public class Test
+  {
+
+  }
+
+Execute (run fix usings):
+  call OmniSharpTestInitializeBuffer('FixUsings1')
+  call OmniSharpWarmup('OmniSharp#actions#usings#Fix', [])
+  call OmniSharpTestAwait('OmniSharp#actions#usings#Fix', [])
+
+Expect cs(should remove unused using):
+  public class Test
+  {
+
+  }
+
+
+Given cs():
+  public class Test
+  {
+    public Test()
+    {
+        Console.WriteLine("test");
+    }
+  }
+
+Execute (run fix usings):
+  call OmniSharpTestInitializeBuffer('FixUsings2')
+  call OmniSharpWarmup('OmniSharp#actions#usings#Fix', [])
+  call OmniSharpTestAwait('OmniSharp#actions#usings#Fix', [])
+
+Expect cs(should add required using):
+  using System;
+
+  public class Test
+  {
+    public Test()
+    {
+        Console.WriteLine("test");
+    }
+  }
+
+
+Given cs():
+  using System;
+
+  public class Test
+  {
+    public Test()
+    {
+        Console.WriteLine(Encoding.UTF8.ToString());
+    }
+  }
+
+Execute (run fix usings):
+  call OmniSharpTestInitializeBuffer('FixUsings3')
+  call OmniSharpWarmup('OmniSharp#actions#usings#Fix', [])
+  call OmniSharpTestAwait('OmniSharp#actions#usings#Fix', [])
+
+Expect cs(should add another required using):
+  using System;
+  using System.Text;
+
+  public class Test
+  {
+    public Test()
+    {
+        Console.WriteLine(Encoding.UTF8.ToString());
+    }
+  }
+
+
+Given cs():
+  using System;
+
+  public class Test
+  {
+    public Test()
+    {
+        Console.WriteLine(Encoding.UTF8.ToString());
+    }
+  }
+
+Execute (run fix usings with virtualedit=all):
+  call OmniSharpTestInitializeBuffer('FixUsings4')
+  set virtualedit=all
+  call OmniSharpWarmup('OmniSharp#actions#usings#Fix', [])
+  call OmniSharpTestAwait('OmniSharp#actions#usings#Fix', [])
+
+Expect cs(should add another required using):
+  using System;
+  using System.Text;
+
+  public class Test
+  {
+    public Test()
+    {
+        Console.WriteLine(Encoding.UTF8.ToString());
+    }
+  }
+
+
+Given cs():
+  public class test {
+      class1 ns1 = new class1();
+  }
+
+  namespace ns1
+  {
+      public class class1{}
+  }
+
+  namespace ns2
+  {
+      public class class1{}
+  }
+
+Execute (run fix usings):
+  call OmniSharpTestInitializeBuffer('FixUsings5')
+  call OmniSharpWarmup('OmniSharp#actions#usings#Fix', [])
+  call OmniSharpTestAwait('OmniSharp#actions#usings#Fix', [])
+
+Expect cs(should not add ambiguous using):
+  public class test {
+      class1 ns1 = new class1();
+  }
+
+  namespace ns1
+  {
+      public class class1{}
+  }
+
+  namespace ns2
+  {
+      public class class1{}
+  }
+
+Execute (should return ambiguous usings to Callback):
+  call OmniSharpTestInitializeBuffer('FixUsings6')
+  call OmniSharpWarmup('OmniSharp#actions#usings#Fix', [])
+  let g:OmniSharp_test_locations = []
+  function! s:CallbackFixUsings(locations)
+    let g:OmniSharp_test_waiting = 0
+    let g:OmniSharp_test_locations = a:locations
+  endfunction
+  let Callback = function('s:CallbackFixUsings')
+  let g:OmniSharp_test_waiting = 1
+  call function('OmniSharp#actions#usings#Fix', [Callback])()
+  let starttime = reltime()
+  while g:OmniSharp_test_waiting
+  \ && reltime(starttime)[0] < g:OmniSharp_test_timeout
+    sleep 50m
+  endwhile
+  AssertEqual len(getqflist()), 0
+  Assert !g:OmniSharp_test_waiting, 'OmniSharp#actions#usings#Fix timed out'
+  AssertEqual len(g:OmniSharp_test_locations), 2
+  AssertEqual g:OmniSharp_test_locations[0].lnum, 2
+
+Execute (should add ambiguous usings to quickfix):
+  call OmniSharpTestInitializeBuffer('FixUsings7')
+  call OmniSharpWarmup('OmniSharp#actions#usings#Fix', [])
+  " Cannot use OmniSharpTestAwait, as the callback prevents the default quickfix
+  " behaviour
+  call OmniSharp#actions#usings#Fix()
+  sleep 5
+  AssertEqual len(getqflist()), 2
+  cfirst
+  AssertEqual line('.'), 2
