@@ -10,7 +10,7 @@ set smarttab
 set ruler
 set smartindent
 
-autocmd BufRead,BufNewFile *.cpp,*.cc,*.h,*.c,*.hpp,Makefile setlocal shiftwidth=4 tabstop=4 noexpandtab
+autocmd BufRead,BufNewFile *.cs,*.cpp,*.cc,*.h,*.c,*.hpp,Makefile setlocal shiftwidth=4 tabstop=4 noexpandtab
 autocmd BufRead,BufNewFile *.js setlocal shiftwidth=2 tabstop=2 expandtab
 
 autocmd FileType cpp,c,h source ~/.vim/syntax/vulkan1.0.vim
