@@ -46,6 +46,7 @@ IMPROVEMENTS:
   [[GH-3312]](https://github.com/fatih/vim-go/pull/3312)
 * Install tools with `go install` instead of `go get`.
   [[GH-3317]](https://github.com/fatih/vim-go/pull/3317)
+  [[GH-3370]](https://github.com/fatih/vim-go/pull/3370)
 * Update `:GoPlay` to use `go.dev/play` instead of `play.golang.org`.
   [[GH-3331]](https://github.com/fatih/vim-go/pull/3331)
   [[GH-3348]](https://github.com/fatih/vim-go/pull/3348)
@@ -53,6 +54,13 @@ IMPROVEMENTS:
   [[GH-3344]](https://github.com/fatih/vim-go/pull/3344)
 * Add syntax elements for `any` and `comparable` types.
   [[GH-3351]](https://github.com/fatih/vim-go/pull/3351)
+* Add syntax support for go.work files.
+  [[GH-3375]](https://github.com/fatih/vim-go/pull/3375)
+* Show the current goroutine at the top of the list of goroutines when debugging.
+  [[GH-3379]](https://github.com/fatih/vim-go/pull/3379)
+* Add `:GoModReload` and autocmd events to reload go.mod when it changes on
+  disk and is open in a buffer.
+  [[GH-3387]](https://github.com/fatih/vim-go/pull/3387)
 
 BUG FIXES:
 * Handle terminating parenthesis on hexadecimal values.
@@ -80,6 +88,8 @@ BUG FIXES:
   [[GH-3343]](https://github.com/fatih/vim-go/pull/3343)
 * Resolve symlinks in autocmd events.
   [[GH-3353]](https://github.com/fatih/vim-go/pull/3353)
+* Fix `:GoRename` in Neovim so that it does not take 10 seconds to complete.
+  [[GH-3386]](https://github.com/fatih/vim-go/pull/3386)
 
 ## v1.25 - (April 18, 2021)
 
