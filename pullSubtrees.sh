@@ -8,6 +8,6 @@ git subtree pull -P bundle/rust.vim https://github.com/rust-lang/rust.vim.git ma
 git subtree pull -P bundle/salt-vim https://github.com/saltstack/salt-vim.git master --squash
 git subtree pull -P bundle/vim-racer https://github.com/racer-rust/vim-racer.git master --squash
 git subtree pull -P bundle/Jenkinsfile-vim-syntax https://github.com/martinda/Jenkinsfile-vim-syntax.git master --squash
-#git subtree pull -P bundle/ctrlp https://github.com/kien/ctrlp.vim.git master --squash
-git subtree pull -P bundle/omnisharp-vim git://github.com/OmniSharp/omnisharp-vim master --squash
+git subtree pull -P bundle/ctrlp https://github.com/kien/ctrlp.vim.git master --squash
+#git subtree pull -P bundle/omnisharp-vim git://github.com/OmniSharp/omnisharp-vim master --squash
 git subtree pull -P bundle/vim-indentwise https://github.com/jeetsukumaran/vim-indentwise.git master --squash
