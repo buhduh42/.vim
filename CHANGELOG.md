@@ -3,6 +3,36 @@
 BACKWARDS INCOMPATIBILITIES:
 
 IMPROVEMENTS:
+* Update documentation for installing tools.
+  [[GH-3413]](https://github.com/fatih/vim-go/pull/3413)
+* Show diagnostics via go#tool#DescribeBalloon().
+  [[GH-3415]](https://github.com/fatih/vim-go/pull/3415)
+  [[GH-3417]](https://github.com/fatih/vim-go/pull/3417)
+* Allow version of individual tools to be installed with `:GoUpdateBinaries`
+  and `:GoInstallBinaries` to be overridden by users.
+  [[GH-3435]](https://github.com/fatih/vim-go/pull/3435)
+  [[GH-3436]](https://github.com/fatih/vim-go/pull/3436)
+* Highlight numeric formats introduced in Go 1.13.
+  [[GH-3440]](https://github.com/fatih/vim-go/pull/3440)
+
+BUG FIXES:
+* Fix quoting of arguments when shell is set to pwsh on Windows.
+  [[GH-3422]](https://github.com/fatih/vim-go/pull/3422)
+* Use -mod=mod instead of -mod=readonly when installing tools.
+  [[GH-3449]](https://github.com/fatih/vim-go/pull/3449)
+* Remove support for /* */ comments in go.mod files.
+  [[GH-3460]](https://github.com/fatih/vim-go/pull/3460)
+* Fix go.work syntax support.
+  [[GH-3461]](https://github.com/fatih/vim-go/pull/3461)
+* Split the buffer without considering the current buffer when a mapping to
+  split and jump to definition is used.
+  [[GH-3462]](https://github.com/fatih/vim-go/pull/3462)
+
+## v1.26 - (April 23, 2022)
+
+BACKWARDS INCOMPATIBILITIES:
+
+IMPROVEMENTS:
 * Add mapping for formatting, `(go-fmt)`.
   [[GH-3209]](https://github.com/fatih/vim-go/pull/3209)
 * Add `tr` snippet for `"testing.T".Run`.
@@ -24,6 +54,7 @@ IMPROVEMENTS:
   [[GH-3252]](https://github.com/fatih/vim-go/pull/3252)
 * Default to using `revive` in place of `golint`.
   [[GH-3248]](https://github.com/fatih/vim-go/pull/3248)
+  [[GH-3401]](https://github.com/fatih/vim-go/pull/3401)
 * Teach `:GoDebugPrint` to show function call return values.
   [[GH-3256]](https://github.com/fatih/vim-go/pull/3256)
 * Do not enable keyify unless in GOPATH.
@@ -61,6 +92,11 @@ IMPROVEMENTS:
 * Add `:GoModReload` and autocmd events to reload go.mod when it changes on
   disk and is open in a buffer.
   [[GH-3387]](https://github.com/fatih/vim-go/pull/3387)
+  [[GH-3391]](https://github.com/fatih/vim-go/pull/3391)
+* Add syntax support for generics.
+  [[GH-3397]](https://github.com/fatih/vim-go/pull/3397)
+* Remove invalid numeric literal highlighting.
+  [[GH-3404]](https://github.com/fatih/vim-go/pull/3404)
 
 BUG FIXES:
 * Handle terminating parenthesis on hexadecimal values.
@@ -90,6 +126,8 @@ BUG FIXES:
   [[GH-3353]](https://github.com/fatih/vim-go/pull/3353)
 * Fix `:GoRename` in Neovim so that it does not take 10 seconds to complete.
   [[GH-3386]](https://github.com/fatih/vim-go/pull/3386)
+* Fix `:GoDebugConnect` argument handling.
+  [[GH-3400]](https://github.com/fatih/vim-go/pull/3400)
 
 ## v1.25 - (April 18, 2021)
 
