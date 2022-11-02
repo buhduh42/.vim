@@ -14,6 +14,7 @@ autocmd BufRead,BufNewFile *.cs,*.cpp,*.cc,*.h,*.c,*.hpp,Makefile setlocal shift
 autocmd BufRead,BufNewFile *.js setlocal shiftwidth=2 tabstop=2 expandtab
 
 autocmd FileType cpp,c,h source ~/.vim/syntax/vulkan1.0.vim
+autocmd BufNew,BufNewFile,BufRead *.make :setfiletype make
 filetype plugin on
 
 execute pathogen#infect()
