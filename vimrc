@@ -1,4 +1,5 @@
-syntax on
+syntax enable
+filetype plugin indent on
 set ignorecase
 set smartcase
 set backspace=indent,eol,start
@@ -43,4 +44,8 @@ vnoremap <silent> <leader>j :<c-u>call clean_json#CleanJSON()<CR>
 "set foldmethod=indent
 "set foldlevel=99
 
+"vim-go
 let g:go_version_warning = 0
+
+"vim-rust
+let g:rustfmt_autosave = 1
