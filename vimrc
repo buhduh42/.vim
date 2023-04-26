@@ -24,6 +24,7 @@ call pathogen#helptags()
 let mapleader = " "
 map <C-n> <plug>NERDTreeTabsToggle<CR>
 map <silent> <leader>c :!clear<CR>
+map <leader>r :NERDTreeFind<CR>
 "map <silent> <leader>s :call stupid_brackets#MatchitRuby()<CR>
 "
 
@@ -37,6 +38,8 @@ nmap <silent> <leader>if :g/^import ($/:normal V%zf<CR><leader>vf
 nmap <silent> <leader>vf :g/^var .\+{$/:normal V$h%zf<CR><leader>sf
 "don't recurse on that last chain call
 nnoremap <silent> <leader>sf :g/^type.\+{$/:normal V%zf<CR>'z
+
+nmap <silent> <leader>yf gg/Resources<CR>/^  \w/<CR>jjVnkzf
 
 nnoremap <silent> <leader>j :normal ggVG<CR>:<c-u>call clean_json#CleanJSON()<CR>
 vnoremap <silent> <leader>j :<c-u>call clean_json#CleanJSON()<CR>
