@@ -12,3 +12,4 @@ git subtree pull -P bundle/ctrlp https://github.com/kien/ctrlp.vim.git master --
 #git subtree pull -P bundle/omnisharp-vim git://github.com/OmniSharp/omnisharp-vim master --squash
 git subtree pull -P bundle/vim-indentwise https://github.com/jeetsukumaran/vim-indentwise.git master --squash
 git subtree pull -P bundle/vim-webapi git@github.com:mattn/webapi-vim.git master --squash
+git subtree pull -P bundle/typescript-vim https://github.com/leafgarland/typescript-vim.git master --squash

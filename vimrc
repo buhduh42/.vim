@@ -10,6 +10,7 @@ set expandtab
 set smarttab
 set ruler
 set smartindent
+set cscopetag
 
 autocmd BufRead,BufNewFile *.cs,*.cpp,*.cc,*.h,*.c,*.hpp,Makefile setlocal shiftwidth=4 tabstop=4 noexpandtab
 autocmd BufRead,BufNewFile *.js setlocal shiftwidth=2 tabstop=2 expandtab
@@ -23,7 +24,7 @@ call pathogen#helptags()
 "map <C-n> :NERDTreeToggle<CR>
 let mapleader = " "
 map <C-n> <plug>NERDTreeTabsToggle<CR>
-map <silent> <leader>c :!clear<CR>
+nmap <silent> <leader>c :tabc<CR>
 map <leader>r :NERDTreeFind<CR>
 "map <silent> <leader>s :call stupid_brackets#MatchitRuby()<CR>
 "
