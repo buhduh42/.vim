@@ -11,6 +11,7 @@ set smarttab
 set ruler
 set smartindent
 set cscopetag
+set nohlsearch
 
 autocmd BufRead,BufNewFile *.cs,*.cpp,*.cc,*.h,*.c,*.hpp,Makefile setlocal shiftwidth=4 tabstop=4 noexpandtab
 autocmd BufRead,BufNewFile *.js setlocal shiftwidth=2 tabstop=2 expandtab
