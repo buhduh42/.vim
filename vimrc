@@ -25,7 +25,9 @@ call pathogen#helptags()
 "map <C-n> :NERDTreeToggle<CR>
 let mapleader = " "
 map <C-n> <plug>NERDTreeTabsToggle<CR>
-nmap <silent> <leader>c :tabc<CR>
+"map <C-n> <plug>NERDTreeMirrorToggle<CR>
+"nmap <silent> <leader>c :tabc<CR>
+nnoremap <silent> <leader>c :tabc<CR>
 map <leader>r :NERDTreeFind<CR>
 "map <silent> <leader>s :call stupid_brackets#MatchitRuby()<CR>
 "
@@ -34,8 +36,8 @@ map <leader>r :NERDTreeFind<CR>
 "Was having trouble getting the grouped or ()|() regex working
 "though it did work directly...
 nmap <silent> <leader>f mz:g/^func.\+($/:normal V$h%$h%zf<CR><leader>of
-nmap <silent> <leader>of :g/^func.\+{$/:normal $V%zf<CR><leader>cf
-nmap <silent> <leader>cf :g/^const ($/:normal V%zf<CR><leader>if
+nmap <silent> <leader>of :g/^func.\+{$/:normal $V%zf<CR><leader>qf
+nmap <silent> <leader>qf :g/^const ($/:normal V%zf<CR><leader>if
 nmap <silent> <leader>if :g/^import ($/:normal V%zf<CR><leader>vf
 nmap <silent> <leader>vf :g/^var .\+{$/:normal V$h%zf<CR><leader>sf
 "don't recurse on that last chain call
