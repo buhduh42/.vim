@@ -13,6 +13,7 @@ repos=(\
   https://github.com/jeetsukumaran/vim-indentwise.git \
   git@github.com:mattn/webapi-vim.git \
   https://github.com/leafgarland/typescript-vim.git \
+  https://tpope.io/vim/dispatch.git \
 )
 for repo in ${repos[@]}; do
   dir=$(echo -n ${repo%.*} | rev | cut -d'/' -f1 - | rev)
