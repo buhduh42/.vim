@@ -18,7 +18,7 @@ autocmd BufRead,BufNewFile *.js setlocal shiftwidth=2 tabstop=2 expandtab
 
 autocmd FileType cpp,c,h source ~/.vim/syntax/vulkan1.0.vim
 autocmd BufNew,BufNewFile,BufRead *.make :setfiletype make
-autocmd BufNew,BufNewFile,BufRead *.larlpop :setfiletype rust
+autocmd BufNew,BufNewFile,BufRead *.lalrpop :setfiletype rust
 filetype plugin on
 
 execute pathogen#infect()
